@@ -1,0 +1,2 @@
+set CURRENTDIR=%CD%
+gulp

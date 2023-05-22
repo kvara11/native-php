@@ -1,0 +1,7 @@
+.container {
+    @include sitewide-gutter($viewport-type: "mobile");
+
+    @include min-desktop {
+        @include sitewide-gutter($viewport-type: "desktop");
+    }
+}

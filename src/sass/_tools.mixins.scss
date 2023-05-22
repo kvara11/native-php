@@ -1,0 +1,311 @@
+@mixin inline-block {
+    display: -moz-inline-stack;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+}
+
+@mixin image-replacement {
+    background-color: transparent;
+    border: 0;
+    overflow: hidden;
+    /* IE 6/7 fallback */
+    *text-indent: -9999px;
+    &:before {
+        content: "";
+        display: block;
+        width: 0;
+        height: 150%;
+    }
+}
+
+@mixin input-placeholder {
+    &::-webkit-input-placeholder { @content; }  // [1]
+    &:-moz-placeholder { @content; }                        // [1]
+    &:-ms-input-placeholder { @content; }               // [2]
+    &.placeholder { @content; }
+}
+
+// Shortcut to set the color of html5 input placeholder text.
+@mixin input-placeholder-color($color) {
+    @include input-placeholder {
+        color: $color;
+    }
+}
+
+// https://github.com/bitmanic/rem
+// Eg.
+// @include rem('font-size', 10px);
+// @include rem('padding',10px 0 2px 5px);
+$baseline-px: 16px;
+@mixin rem($property, $px-values) {
+    $baseline-rem: $baseline-px / 1rem * 1;
+    #{$property}: $px-values;
+    @if type-of($px-values) == "number" {
+        #{$property}: $px-values / $baseline-rem; }
+    @else {
+        $rem-values: ();
+        @each $value in $px-values {
+            @if $value == 0 or type-of( $value ) != "number" {
+                $rem-values: append($rem-values, $value);
+            } @else {
+                $rem-values: append($rem-values, $value / $baseline-rem);
+            }
+        }
+        // Return the property and its list of converted values
+        #{$property}: $rem-values;
+    }
+}
+
+@mixin disable-selection {
+    -webkit-touch-callout : none;
+    -webkit-user-select   : none;
+    -khtml-user-select    : none;
+    -moz-user-select      : none;
+    -ms-user-select       : none;
+    user-select           : none;
+}
+
+@function letter-spacing($value, $font-size) {
+    @return strip-units((($value * $font-size) / 1000)) * 1px;
+}
+
+@function strip-units($number) {
+    @return $number / ($number * 0 + 1);
+}
+
+@function percentage-from-width($block-width, $page-width) {
+    @return strip-units($block-width/$page-width)*100%;
+}
+
+@function auto-line-height($font-size) {
+    @return $font-size * 1.2;
+}
+
+@function retinize($number, $ceil: false) {
+    @if ($ceil == true) {
+        @return ceil($number / 2);
+    } @else {
+        @return $number / 2;
+    }
+}
+
+@mixin centre($axis: "both"){
+    position:absolute;
+
+    @if $axis == "y"{
+        top:50%;
+        @include transform(translateY(-50%));
+    }
+    @if $axis == "x"{
+        left:50%;
+        @include transform(translateX(-50%));
+    }
+    @if $axis == "both"{
+        top: 50%;
+        left: 50%;
+        @include transform(translate(-50%, -50%));
+    }
+}
+
+@mixin retina-sprite($name, $hover: false, $active: false, $dimensions: true) {
+  @include _retina-sprite($name, $sprites, $sprites2x, $hover, $active, $dimensions);
+}
+
+// The general purpose retina sprite mixin.
+  //
+  //    @include retina-sprite(name, $spritemap1, $spritemap2)
+  //    @include retina-sprite(name, $spritemap1, $spritemap2[, $dimensions: true, $pad: 0])
+  //
+  //    If `dimensions` is true, then width/height will also be set.
+  //
+  //    if `pad` is non-zero, then that's how much padding the element will have (requires
+  //    $spacing on the sprite maps). Great for iPhone interfaces to make hit areas bigger.
+  //
+@mixin _retina-sprite($name, $sprites, $sprites2x, $hover, $active, $dimensions: true, $pad: 0) {
+  @if $dimensions == true {
+    @include sprite-dimensions($sprites, $name);
+  }
+  background-image: sprite-url($sprites);
+  background-position: sprite-position($sprites, $name, -$pad, -$pad);
+  background-repeat: no-repeat;
+
+  @if $hover == true {
+    $name_hover: $name + _hover;
+    &:hover {
+      background-position: sprite-position($sprites, $name_hover, -$pad, -$pad);
+    }
+  }
+  @if $active == true {
+    $name_active: $name + _active;
+    &:active {
+      background-position: sprite-position($sprites, $name_active, -$pad, -$pad);
+    }
+  }
+
+  @if $pad > 0 {
+    padding: $pad;
+  }
+
+  @include hdpi {
+    & {
+      $pos: sprite-position($sprites2x, $name, -$pad * 2, -$pad * 2);
+      background-image: sprite-url($sprites2x);
+      background-position: nth($pos, 1) / 2 nth($pos, 2) / 2;
+      @include background-size(ceil(image-width(sprite-path($sprites2x)) / 2) auto);
+      //  sprite-path() returns the path of the generated sprite sheet, which
+      //  image-width() calculates the width of. the ceil() is in place in case
+      //  you have sprites that have an odd-number of pixels in width
+
+      @if $hover == true {
+        $name_hover: $name + _hover;    // create myButton_hover and assign it
+        &:hover{
+          $pos: sprite-position($sprites2x, $name_hover, -$pad * 2, -$pad * 2);
+          background-position: nth($pos, 1) / 2 nth($pos, 2) / 2;
+        }
+      }
+      @if $active == true {
+        $name_active: $name + _active;    // create myButton_active and assign it
+        &:active{
+          $pos: sprite-position($sprites2x, $name_active, -$pad * 2, -$pad * 2);
+          background-position: nth($pos, 1) / 2 nth($pos, 2) / 2;
+        }
+      }
+    }
+  }
+}
+
+@function gutter-width($viewport-type, $parents: 1) {
+
+    // Always use 20px on mobile
+    @if $viewport-type == "mobile" {
+        @return 20px;
+    }
+
+    $default-desktop-gutter: 79 / 1440;
+    $default-mobile-gutter: 29 / 320;
+
+    $margin-reduction: $parents;
+
+    @if type-of($parents) == "list" {
+        $first-item: nth($parents, 1);
+
+        @if (type-of($first-item) == "number") {
+            $margin-reduction: 1;
+            @each $number in $parents {
+                $margin-reduction: $margin-reduction*$number;
+            }
+        } @else if type-of($parents) == "map" {
+            $margin-reduction: 1;
+            @each $map in $parents {
+                $width: map-get($map, "width");
+                $gutter: map-get($map, "gutter");
+                $columns: 1/$width;
+                $total-width: (($columns - 1) * ($gutter / 100) / $columns);
+                $margin-reduction: $margin-reduction * $total-width;
+            }
+        }
+
+    } @else if type-of($parents) == "map" {
+        $width: map-get($map, "width");
+        $gutter: map-get($map, "gutter");
+        $columns: 1/$width;
+        $total-width: (($columns - 1) * ($gutter / 100) / $columns);
+        $margin-reduction: $margin-reduction * $total-width;
+    }
+
+    $desktop-gutter: ((1/$margin-reduction) * $default-desktop-gutter) * 100%;
+    $mobile-gutter: ((1/$margin-reduction) * $default-mobile-gutter) * 100%;
+
+    $gutter: $mobile-gutter;
+    @if $viewport-type == "desktop" {
+        $gutter: $desktop-gutter;
+    }
+
+    @return $gutter;
+}
+
+@mixin sitewide-gutter($viewport-type, $parents: 1, $gutter-type: "padding") {
+
+    $gutter: gutter-width($viewport-type, $parents);
+
+    @if $gutter-type == "padding" {
+        padding-left: $gutter;
+        padding-right: $gutter;
+    } @else if $gutter-type == "margin" {
+        margin-left: $gutter;
+        margin-right: $gutter;
+    }
+
+}
+
+@mixin aspect-ratio($width, $height, $element-class: "inner") {
+    position: relative;
+
+    &:before {
+        content: "";
+        display: block;
+        width: 100%;
+        padding-top: ($height / $width) * 100%;
+    }
+
+    &__#{$element-class} {
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+}
+
+@function remove-nth($list, $index) {
+  $result: null;
+
+  @if type-of($index) != number {
+    @warn "$index: #{quote($index)} is not a number for `remove-nth`.";
+  }
+
+  @else if $index == 0 {
+    @warn "List index 0 must be a non-zero integer for `remove-nth`.";
+  }
+
+  @else if abs($index) > length($list) {
+    @warn "List index is #{$index} but list is only #{length($list)} item long for `remove-nth`.";
+  }
+
+  @else {
+    $result: ();
+    $index: if($index < 0, length($list) + $index + 1, $index);
+
+    @for $i from 1 through length($list) {
+      @if $i != $index {
+        $result: append($result, nth($list, $i));
+      }
+    }
+  }
+
+  @return $result;
+}
+
+@mixin font-face($name, $font-files, $eot: false, $weight: false, $style: false, $attributes: false) {
+  $iefont: unquote("#{$eot}?#iefix");
+  @font-face {
+    font-family: quote($name);
+    @if $eot {
+      src: font-url($eot);
+      $font-files: font-url($iefont) unquote("format('embedded-opentype')"), $font-files;
+    }
+    src: $font-files;
+    @if $weight {
+      font-weight: $weight;
+    }
+    @if $style {
+      font-style: $style;
+    }
+    @if $attributes {
+        @each $name, $value in $attributes {
+            #{$name}: unquote($value);
+        }
+    }
+  }
+}

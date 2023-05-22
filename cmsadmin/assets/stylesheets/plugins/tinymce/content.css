@@ -1,0 +1,42 @@
+*,
+*:after,
+*:before{
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    -webkit-font-smoothing:antialiased;
+    font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+}
+body {
+    font: 18px/1.4 'Roboto', sans-serif;
+    font-size: 1.8rem;
+    color: #383838;
+    background: #ffffff;
+    margin: 0 auto;
+}
+h1,h2,h3,h4,h5,h6{
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+h1{line-height: 1.1; font-weight: 400; }
+h2{line-height: 1.15; font-weight: 400; }
+h3{line-height: 1.2; font-weight: 500; }
+h4{line-height: 1.25; font-weight: 700; }
+h5{line-height: 1.25; font-weight: 700; }
+p {
+    font-size: 19px;
+    font-weight: 300;
+}
+span.Quote{
+    display: block;
+    padding: 30px 5%;
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-weight: bold;
+    color: #2c3842;
+    font-size: 24px;
+    font-size: 2.4rem;
+    text-align: center;
+    line-height: 1.3;
+}

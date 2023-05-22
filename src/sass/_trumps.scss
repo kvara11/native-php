@@ -1,0 +1,11 @@
+.hide-on-desktop {
+    @include min-desktop {
+        display: none !important;
+    }
+}
+
+.hide-on-mobile {
+    @include max-desktop {
+        display: none !important;
+    }
+}

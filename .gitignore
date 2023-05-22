@@ -1,0 +1,26 @@
+# Global
+app/cache
+*~
+.DS_Store
+*.scssc
+*.sublime-project
+*.sublime-workspace
+codekit-config.json
+assets/img/*
+.sass-cache
+node_modules
+robots.txt
+
+# Arturo
+_backup/
+shells/
+Vagrantfile
+.vagrant/
+
+# Hendershot
+.idea/
+
+# Craig
+.phpintel/
+/sftp-config.json
+*.mp4

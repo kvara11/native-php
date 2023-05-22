@@ -1,0 +1,22 @@
+# Global
+*~
+.DS_Store
+*.scssc
+*.sublime-project
+*.sublime-workspace
+codekit-config.json
+assets/img/*
+.sass-cache
+node_modules
+
+# Arturo
+_backup/
+shells/
+Vagrantfile
+.vagrant/
+
+# Hendershot
+.idea
+
+# Craig
+.phpintel/

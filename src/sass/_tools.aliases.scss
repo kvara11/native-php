@@ -1,0 +1,11 @@
+@mixin min-desktop {
+    @include min-screen($breakpoint-mobile + 1px) {
+        @content;
+    }
+}
+
+@mixin max-desktop {
+    @include max-screen($breakpoint-mobile * 1px) {
+        @content;
+    }
+}
